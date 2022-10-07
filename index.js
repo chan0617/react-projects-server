@@ -13,12 +13,23 @@ const upload = multer({
     },
   }),
 });
-const port = 8080;
 
+const port = process.env.PORT || 8080;// ||조건부 연산자사용 포트번호가 8080일때써라라는뜻
 app.use(express.json());
 app.use(cors());
 app.use("/uploads", express.static("uploads"));
-
+app.get("/banners", (req, res) => {
+  models.Banner.findAll({ limit: 2 })
+    .then((result) => {
+      res.send({
+        banners:result,
+      })
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("에러가 발생했습니다")
+    });
+});
 app.get("/products", (req, res) => {
   //  조회부분 구현
   // models.Product.findAll({ limit: 1 }) //상품갯수
@@ -50,7 +61,7 @@ app.get("/products/:id", (req, res) => {
     })
     .catch((error) => {
       console.error();
-      res.send("상품조회시 에러가 발생했습니다");
+      res.status(400).send("상품조회시 에러가 발생했습니다");
     });
 });
 
@@ -75,7 +86,7 @@ app.post("/products", (req, res) => {
     })
     .catch((error) => {
       console.error(error);
-      res.send("상품업로드에 문제가 발생하였습니다");
+      res.status(400).send("상품업로드에 문제가 발생하였습니다");
     });
 });
 
